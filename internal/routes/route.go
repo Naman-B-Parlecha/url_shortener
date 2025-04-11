@@ -30,6 +30,6 @@ func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 	metricsHandler := handlers.NewMetricsHandler(metricsService)
 	r.Group("/metrics")
 	{
-		r.GET("/", func(c *gin.Context) {})
+		r.GET("/", metricsHandler.GetMetrics)
 	}
 }
