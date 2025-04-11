@@ -12,27 +12,25 @@ import (
 
 type ShortenerService struct {
 	client *redis.Client
+	ctx    context.Context
 }
 
-func NewShortenerService(client *redis.Client) *ShortenerService {
+func NewShortenerService(client *redis.Client, c context.Context) *ShortenerService {
 	return &ShortenerService{
 		client: client,
+		ctx:    c,
 	}
 }
 
-var (
-	ctx = context.Background()
-)
-
 func (s *ShortenerService) ShortenURL(url string) (string, error) {
-	shorturl, err := s.client.Get(ctx, url).Result()
+	shorturl, err := s.client.Get(s.ctx, url).Result()
 
 	if err == redis.Nil {
 		shorturl, err = generateShortenedUrl(url)
 		if err != nil {
 			return "", err
 		}
-		err = s.client.Set(ctx, shorturl, url, 0).Err()
+		err = s.client.Set(s.ctx, shorturl, url, 0).Err()
 		if err != nil {
 			return "", err
 		}
@@ -41,7 +39,7 @@ func (s *ShortenerService) ShortenURL(url string) (string, error) {
 			return "", err
 		}
 
-		err = s.client.Incr(ctx, fmt.Sprintf("domain:%s", domain)).Err()
+		err = s.client.Incr(s.ctx, fmt.Sprintf("domain:%s", domain)).Err()
 		if err == redis.Nil {
 			return "", fmt.Errorf("domain not found")
 		}
