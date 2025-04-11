@@ -12,24 +12,24 @@ import (
 func SetupRoutes(r *gin.Engine, cfg *config.Config) {
 
 	redisClient := redis.NewRedisStore()
-	shortenerService := services.NewShortenerService(redisClient.Client)
+	shortenerService := services.NewShortenerService(redisClient.Client, redisClient.Ctx)
 	shortenerHandler := handlers.NewShortenerHandler(shortenerService)
-	r.Group("/shorten")
+	shortenRoute := r.Group("/shorten")
 	{
-		r.POST("/", shortenerHandler.ShortenURL)
+		shortenRoute.POST("/", shortenerHandler.ShortenURL)
 	}
 
-	redirectService := services.NewRedirectService(redisClient.Client)
+	redirectService := services.NewRedirectService(redisClient.Client, redisClient.Ctx)
 	redirectHandler := handlers.NewRedirectHandler(redirectService)
-	r.Group("/:shortened")
+	redirectRoute := r.Group("/shortened")
 	{
-		r.GET("/", redirectHandler.Redirect)
+		redirectRoute.GET("/:id", redirectHandler.Redirect)
 	}
 
-	metricsService := services.NewMetricsService(redisClient.Client)
+	metricsService := services.NewMetricsService(redisClient.Client, redisClient.Ctx)
 	metricsHandler := handlers.NewMetricsHandler(metricsService)
-	r.Group("/metrics")
+	metricsRotues := r.Group("/metrics")
 	{
-		r.GET("/", metricsHandler.GetMetrics)
+		metricsRotues.GET("/", metricsHandler.GetMetrics)
 	}
 }
