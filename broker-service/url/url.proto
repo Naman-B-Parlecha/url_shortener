@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package url;
+
+option go_package = "./url";
+
+message LongURL{
+    string longurl = 1;
+}
+
+message ShortURL{
+    string shorturl = 1;
+}
+
+service URLService{
+    rpc GenerateShortURL (LongURL) returns (ShortURL);
+    rpc GetLongURL (ShortURL) returns (LongURL);
+}
