@@ -11,6 +11,16 @@ services:
       mode: replicated
     ports:
       - "8081:8081"
+  redirect-service:
+    build:
+      context: ./../redirect-service
+      dockerfile: ./Dockerfile
+    restart: always
+    deploy:
+      replicas: 1
+      mode: replicated
+    ports:
+      - "50002:50002"
   url-shortener-service:
     build:
       context: ./../url-shortener-service

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"net"
 
@@ -60,7 +62,7 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 	id := uuid.New()
 	shortu_url := util.HashToBase62(req.Longurl, 5)
 	query := `INSERT INTO urls (id, long_url, short_url) VALUES ($1, $2, $3)`
-	_, err := s.DBConn.ExecContext(ctx, query, id, req.Longurl, shortu_url)
+	_, err := s.DBConn.ExecContext(ctx, query, id, req.Longurl, fmt.Sprintf(`http://nig-url/%s`, shortu_url))
 	if err != nil {
 		log.Println("Failed to insert URL into database:", err)
 		return nil, err
@@ -73,6 +75,11 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 }
 
 func (s *GRPCServer) GetLongURL(ctx context.Context, req *url.ShortURL) (*url.LongURL, error) {
+	if req.Shorturl == "" {
+		log.Println("Short URL is empty")
+		return nil, errors.New("Short URL cannot be empty")
+	}
+
 	query := `SELECT long_url FROM urls WHERE short_url = $1`
 	var long_url string
 	resp, err := s.DBConn.ExecContext(ctx, query, req.Shorturl)

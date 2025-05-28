@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package redirect;
+
+option go_package = './redirect';
+
+message ShortURL{
+    string shorturl = 1;
+}
+
+message LongURL{
+    string longurl = 1;
+}
+
+service RedirectService {
+    rpc GetRedirectURL(ShortURL) returns (LongURL);
+}
