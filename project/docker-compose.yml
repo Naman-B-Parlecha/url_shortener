@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  broker-service:
+    build:
+      context: ./../broker-service
+      dockerfile: Dockerfile
+    restart: always
+    deploy:
+      replicas: 1
+      mode: replicated
+    ports:
+      - "8081:8081"
+  url-shortener-service:
+    build:
+      context: ./../url-shortener-service
+      dockerfile: ./Dockerfile
+    restart: always
+    deploy:
+      replicas: 1
+      mode: replicated
+    environment:
+      DSN: "host=postgres port=5432 user=postgres password=password dbname=urls sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50001:50001"
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: urls
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./db-data/postgres/:/var/lib/postgresql/data/"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
