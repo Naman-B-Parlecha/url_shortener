@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "./analytics";
+
+import "google/protobuf/empty.proto";
+
+message ShortURL {
+    string shorturl = 1;
+}
+
+message AnalyticsResponse {
+    string shorturl = 1;
+    int32 total_clicks = 2;
+}
+
+service AnalyticsService {
+    rpc GetAnalytics(ShortURL) returns (AnalyticsResponse);
+    rpc AddAnalytics(ShortURL) returns (google.protobuf.Empty);
+}

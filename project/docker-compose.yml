@@ -52,3 +52,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: adminpassword
+      MONGO_INITDB_DATABASE: analytics_db
+      MONGO_URI: mongodb://admin:adminpassword@mongo:27017/analytics_db?authSource=admin
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
