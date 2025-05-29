@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Naman-B-Parlecha/url-shortener/broker-service/analytics"
@@ -120,7 +121,9 @@ func handleAnalytics(ctx *gin.Context, a Analytics) {
 	defer cancel()
 
 	client := analytics.NewAnalyticsServiceClient(conn)
-	resp, err := client.GetAnalytics(grpcCtx, &analytics.ShortURL{Shorturl: a.ShortURL})
+	shorturl_id := strings.Split(a.ShortURL, "/")
+	short_id := shorturl_id[len(shorturl_id)-1]
+	resp, err := client.GetAnalytics(grpcCtx, &analytics.ShortURL{Shorturl: short_id})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record analytics", "message": err.Error()})
 		return
