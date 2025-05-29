@@ -14,16 +14,6 @@ pipeline {
         TASK_FAMILY = 'url-short-task'
     }
     stages {
-        stage('Init Variables') {
-            steps {
-                script {
-                    dockerBrokerImage = null
-                    dockerShortenerImage = null
-                    dockerRedirectImage = null
-                    dockerAnalyticsImage = null
-                }
-            }
-        }
         stage('Checkout Repository') {
             steps {
                 echo "Checking out code"

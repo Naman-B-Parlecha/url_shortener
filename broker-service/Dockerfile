@@ -16,7 +16,6 @@ FROM alpine:latest
 
 WORKDIR /app
 
-# Install curl
 RUN apk add --no-cache curl
 
 COPY --from=builder /app/broker-service .
