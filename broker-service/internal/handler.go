@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Naman-B-Parlecha/url-shortener/broker-service/analytics"
 	"github.com/Naman-B-Parlecha/url-shortener/broker-service/redirect"
 	"github.com/Naman-B-Parlecha/url-shortener/broker-service/url"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ type RequestPayload struct {
 	Action      string       `json:"action"`
 	RedirectURL *RedirectURL `json:"redirect_url,omitempty"`
 	ShortURL    *ShortURL    `json:"short_url,omitempty"`
-	Analyatics  *Analytics   `json:"analyatics,omitempty"`
+	Analyatics  *Analytics   `json:"analytics,omitempty"`
 }
 
 type RedirectURL struct {
@@ -103,4 +104,22 @@ func handleShorten(ctx *gin.Context, shortURL ShortURL) {
 	ctx.JSON(http.StatusOK, gin.H{"short_url": fmt.Sprintf("http://nig-url/%s", resp.Shorturl)})
 }
 
-func handleAnalytics(ctx *gin.Context, analytics Analytics) {}
+func handleAnalytics(ctx *gin.Context, a Analytics) {
+	conn, err := grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to analytics service"})
+		return
+	}
+	defer conn.Close()
+
+	grpcCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client := analytics.NewAnalyticsServiceClient(conn)
+	resp, err := client.GetAnalytics(grpcCtx, &analytics.ShortURL{Shorturl: a.ShortURL})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record analytics", "message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Analytics recorded successfully", "data": resp})
+}
