@@ -7,6 +7,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/Naman-B-Parlecha/url-shortener/redirect-service/analytics"
 	"github.com/Naman-B-Parlecha/url-shortener/redirect-service/redirect"
 	"github.com/Naman-B-Parlecha/url-shortener/redirect-service/url"
 	"google.golang.org/grpc"
@@ -56,6 +57,20 @@ func (s *RedirectServiceServer) GetRedirectURL(ctx context.Context, req *redirec
 	if resp.Longurl == "" {
 		log.Printf("No long URL found for short URL: %s", req.Shorturl)
 		return nil, errors.New("no long URL found for the provided short URL")
+	}
+
+	conn, err = grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Printf("Failed to connect to analytics service: %v", err)
+		return nil, err
+	}
+
+	analyticsClient := analytics.NewAnalyticsServiceClient(conn)
+	_, err = analyticsClient.RecordAnalytics(gprcCtx, &analytics.ShortURL{Shorturl: req.Shorturl})
+
+	if err != nil {
+		log.Printf("Failed to record analytics for short URL %s: %v", req.Shorturl, err)
+		return nil, err
 	}
 
 	return &redirect.LongURL{

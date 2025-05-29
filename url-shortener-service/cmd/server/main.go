@@ -8,11 +8,13 @@ import (
 	"log"
 	"net"
 
+	"github.com/Naman-B-Parlecha/url-shortener/shortener-service/analytics"
 	"github.com/Naman-B-Parlecha/url-shortener/shortener-service/db"
 	"github.com/Naman-B-Parlecha/url-shortener/shortener-service/url"
 	"github.com/Naman-B-Parlecha/url-shortener/shortener-service/util"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCServer struct {
@@ -68,6 +70,23 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 		return nil, err
 	}
 	log.Println("Inserted URL into database successfully")
+
+	conn, err := grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Println("Failed to connect to analytics service:", err)
+		return nil, err
+	}
+	defer conn.Close()
+
+	analyticsClient := analytics.NewAnalyticsServiceClient(conn)
+	_, err = analyticsClient.AddAnalytics(ctx, &analytics.ShortURL{Shorturl: fmt.Sprintf(`http://nig-url/%s`, shortu_url)})
+
+	if err != nil {
+		log.Println("Failed to add analytics for short URL:", err)
+		return nil, err
+	}
+	log.Println("Added analytics for short URL successfully")
+
 	return &url.ShortURL{
 		Shorturl: shortu_url,
 	}, nil
