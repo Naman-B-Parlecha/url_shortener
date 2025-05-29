@@ -127,9 +127,10 @@ const file_analytics_proto_rawDesc = "" +
 	"\bshorturl\x18\x01 \x01(\tR\bshorturl\"R\n" +
 	"\x11AnalyticsResponse\x12\x1a\n" +
 	"\bshorturl\x18\x01 \x01(\tR\bshorturl\x12!\n" +
-	"\ftotal_clicks\x18\x02 \x01(\x05R\vtotalClicks2\x92\x01\n" +
+	"\ftotal_clicks\x18\x02 \x01(\x05R\vtotalClicks2\xd2\x01\n" +
 	"\x10AnalyticsService\x12A\n" +
-	"\fGetAnalytics\x12\x13.analytics.ShortURL\x1a\x1c.analytics.AnalyticsResponse\x12;\n" +
+	"\fGetAnalytics\x12\x13.analytics.ShortURL\x1a\x1c.analytics.AnalyticsResponse\x12>\n" +
+	"\x0fRecordAnalytics\x12\x13.analytics.ShortURL\x1a\x16.google.protobuf.Empty\x12;\n" +
 	"\fAddAnalytics\x12\x13.analytics.ShortURL\x1a\x16.google.protobuf.EmptyB\rZ\v./analyticsb\x06proto3"
 
 var (
@@ -152,11 +153,13 @@ var file_analytics_proto_goTypes = []any{
 }
 var file_analytics_proto_depIdxs = []int32{
 	0, // 0: analytics.AnalyticsService.GetAnalytics:input_type -> analytics.ShortURL
-	0, // 1: analytics.AnalyticsService.AddAnalytics:input_type -> analytics.ShortURL
-	1, // 2: analytics.AnalyticsService.GetAnalytics:output_type -> analytics.AnalyticsResponse
-	2, // 3: analytics.AnalyticsService.AddAnalytics:output_type -> google.protobuf.Empty
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 1: analytics.AnalyticsService.RecordAnalytics:input_type -> analytics.ShortURL
+	0, // 2: analytics.AnalyticsService.AddAnalytics:input_type -> analytics.ShortURL
+	1, // 3: analytics.AnalyticsService.GetAnalytics:output_type -> analytics.AnalyticsResponse
+	2, // 4: analytics.AnalyticsService.RecordAnalytics:output_type -> google.protobuf.Empty
+	2, // 5: analytics.AnalyticsService.AddAnalytics:output_type -> google.protobuf.Empty
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

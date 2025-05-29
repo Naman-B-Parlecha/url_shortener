@@ -17,5 +17,6 @@ message AnalyticsResponse {
 
 service AnalyticsService {
     rpc GetAnalytics(ShortURL) returns (AnalyticsResponse);
-    rpc AddAnalytics(ShortURL) returns (google.protobuf.Empty);
+    rpc RecordAnalytics(ShortURL) returns (google.protobuf.Empty);
+    rpc AddAnalytics(ShortURL) returns (google.protobuf.Empty); 
 }

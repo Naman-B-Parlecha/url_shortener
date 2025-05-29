@@ -20,8 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AnalyticsService_GetAnalytics_FullMethodName = "/analytics.AnalyticsService/GetAnalytics"
-	AnalyticsService_AddAnalytics_FullMethodName = "/analytics.AnalyticsService/AddAnalytics"
+	AnalyticsService_GetAnalytics_FullMethodName    = "/analytics.AnalyticsService/GetAnalytics"
+	AnalyticsService_RecordAnalytics_FullMethodName = "/analytics.AnalyticsService/RecordAnalytics"
+	AnalyticsService_AddAnalytics_FullMethodName    = "/analytics.AnalyticsService/AddAnalytics"
 )
 
 // AnalyticsServiceClient is the client API for AnalyticsService service.
@@ -29,6 +30,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AnalyticsServiceClient interface {
 	GetAnalytics(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*AnalyticsResponse, error)
+	RecordAnalytics(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddAnalytics(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -50,6 +52,16 @@ func (c *analyticsServiceClient) GetAnalytics(ctx context.Context, in *ShortURL,
 	return out, nil
 }
 
+func (c *analyticsServiceClient) RecordAnalytics(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AnalyticsService_RecordAnalytics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *analyticsServiceClient) AddAnalytics(ctx context.Context, in *ShortURL, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -65,6 +77,7 @@ func (c *analyticsServiceClient) AddAnalytics(ctx context.Context, in *ShortURL,
 // for forward compatibility.
 type AnalyticsServiceServer interface {
 	GetAnalytics(context.Context, *ShortURL) (*AnalyticsResponse, error)
+	RecordAnalytics(context.Context, *ShortURL) (*emptypb.Empty, error)
 	AddAnalytics(context.Context, *ShortURL) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAnalyticsServiceServer()
 }
@@ -78,6 +91,9 @@ type UnimplementedAnalyticsServiceServer struct{}
 
 func (UnimplementedAnalyticsServiceServer) GetAnalytics(context.Context, *ShortURL) (*AnalyticsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAnalytics not implemented")
+}
+func (UnimplementedAnalyticsServiceServer) RecordAnalytics(context.Context, *ShortURL) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecordAnalytics not implemented")
 }
 func (UnimplementedAnalyticsServiceServer) AddAnalytics(context.Context, *ShortURL) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddAnalytics not implemented")
@@ -121,6 +137,24 @@ func _AnalyticsService_GetAnalytics_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyticsService_RecordAnalytics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShortURL)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServiceServer).RecordAnalytics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsService_RecordAnalytics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServiceServer).RecordAnalytics(ctx, req.(*ShortURL))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AnalyticsService_AddAnalytics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ShortURL)
 	if err := dec(in); err != nil {
@@ -149,6 +183,10 @@ var AnalyticsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAnalytics",
 			Handler:    _AnalyticsService_GetAnalytics_Handler,
+		},
+		{
+			MethodName: "RecordAnalytics",
+			Handler:    _AnalyticsService_RecordAnalytics_Handler,
 		},
 		{
 			MethodName: "AddAnalytics",
