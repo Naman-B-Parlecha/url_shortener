@@ -41,12 +41,6 @@ func Handler(ctx *gin.Context) {
 	}
 
 	switch payload.Action {
-	case "redirect":
-		if payload.RedirectURL == nil || payload.RedirectURL.ShortURL == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Redirect URL is required"})
-			return
-		}
-		handleRedirect(ctx, *payload.RedirectURL)
 	case "shorten":
 		if payload.ShortURL == nil || payload.ShortURL.LongURL == "" {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Short URL is required"})
@@ -62,6 +56,16 @@ func Handler(ctx *gin.Context) {
 	default:
 		ctx.JSON(400, gin.H{"error": "Invalid action"})
 	}
+}
+
+func Redirect(ctx *gin.Context) {
+	shortURL := ctx.Param("shortURL")
+	if shortURL == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Short URL is required"})
+		return
+	}
+
+	handleRedirect(ctx, RedirectURL{ShortURL: shortURL})
 }
 
 func handleRedirect(ctx *gin.Context, redirectURL RedirectURL) {
@@ -101,7 +105,7 @@ func handleShorten(ctx *gin.Context, shortURL ShortURL) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate short URL", "message": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"short_url": fmt.Sprintf("http://nig-url/%s", resp.Shorturl)})
+	ctx.JSON(http.StatusOK, gin.H{"short_url": fmt.Sprintf("http://localhost:8081/%s", resp.Shorturl)})
 }
 
 func handleAnalytics(ctx *gin.Context, a Analytics) {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"net"
 
@@ -64,7 +63,7 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 	id := uuid.New()
 	shortu_url := util.HashToBase62(req.Longurl, 5)
 	query := `INSERT INTO urls (id, long_url, short_url) VALUES ($1, $2, $3)`
-	_, err := s.DBConn.ExecContext(ctx, query, id, req.Longurl, fmt.Sprintf(`http://nig-url/%s`, shortu_url))
+	_, err := s.DBConn.ExecContext(ctx, query, id, req.Longurl, shortu_url)
 	if err != nil {
 		log.Println("Failed to insert URL into database:", err)
 		return nil, err
@@ -79,7 +78,7 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 	defer conn.Close()
 
 	analyticsClient := analytics.NewAnalyticsServiceClient(conn)
-	_, err = analyticsClient.AddAnalytics(ctx, &analytics.ShortURL{Shorturl: fmt.Sprintf(`http://nig-url/%s`, shortu_url)})
+	_, err = analyticsClient.AddAnalytics(ctx, &analytics.ShortURL{Shorturl: shortu_url})
 
 	if err != nil {
 		log.Println("Failed to add analytics for short URL:", err)

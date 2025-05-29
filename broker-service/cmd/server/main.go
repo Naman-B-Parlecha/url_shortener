@@ -28,5 +28,7 @@ func main() {
 
 	r.POST("/handle", internal.Handler)
 
+	r.GET("/:shortURL", internal.Redirect)
+
 	r.Run(":8081")
 }
