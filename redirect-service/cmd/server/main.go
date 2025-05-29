@@ -37,7 +37,7 @@ func main() {
 }
 
 func (s *RedirectServiceServer) GetRedirectURL(ctx context.Context, req *redirect.ShortURL) (*redirect.LongURL, error) {
-	conn, err := grpc.NewClient("url-shortener-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50001", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to connect to broker service: %v", err)
 		return nil, err
@@ -59,7 +59,7 @@ func (s *RedirectServiceServer) GetRedirectURL(ctx context.Context, req *redirec
 		return nil, errors.New("no long URL found for the provided short URL")
 	}
 
-	conn, err = grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err = grpc.NewClient("localhost:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Printf("Failed to connect to analytics service: %v", err)
 		return nil, err

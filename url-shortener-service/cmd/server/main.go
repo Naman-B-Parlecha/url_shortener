@@ -70,7 +70,7 @@ func (s *GRPCServer) GenerateShortURL(ctx context.Context, req *url.LongURL) (*u
 	}
 	log.Println("Inserted URL into database successfully")
 
-	conn, err := grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println("Failed to connect to analytics service:", err)
 		return nil, err

@@ -70,7 +70,7 @@ func Redirect(ctx *gin.Context) {
 }
 
 func handleRedirect(ctx *gin.Context, redirectURL RedirectURL) {
-	conn, err := grpc.NewClient("redirect-service:50002", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50002", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to shortener service"})
 		return
@@ -90,7 +90,7 @@ func handleRedirect(ctx *gin.Context, redirectURL RedirectURL) {
 }
 
 func handleShorten(ctx *gin.Context, shortURL ShortURL) {
-	conn, err := grpc.NewClient("url-shortener-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50001", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to shortener service"})
 		return
@@ -110,7 +110,7 @@ func handleShorten(ctx *gin.Context, shortURL ShortURL) {
 }
 
 func handleAnalytics(ctx *gin.Context, a Analytics) {
-	conn, err := grpc.NewClient("analytics-service:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("localhost:50003", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to analytics service"})
 		return
