@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        AWS_ID = '160885286409'
-        AWS_REGION = 'ap-south-1'
+        AWS_ID = 'add_id'
+        AWS_REGION = 'add_region'
         BROKER_REPO = 'url-short/broker-service'
         SHORTENER_REPO = 'url-short/shortener-service'
         ANALYTICS_REPO = 'url-short/analytics-service'
